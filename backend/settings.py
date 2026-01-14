@@ -20,7 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-yun#rpy!l!^iv+0o%wbq%bwn%&&p9ta!$*c6h*d1c(06kk=0k0"
+SECRET_KEY = "django-insecure-1ph)c0rj$d_c=zb&t$2&p7(8!mbf%di%*gaupe5x6th0imwe2*"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "events",
 ]
 
 MIDDLEWARE = [
@@ -74,8 +75,11 @@ WSGI_APPLICATION = "backend.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django_mongodb_backend",
+        "NAME": "campus_db",
+        "CLIENT": {
+            'host': 'mongodb+srv://kazyynaero7_db_user:Darakushita12@cluster0.buivtqq.mongodb.net/?appName=Cluster0'
+        },
     }
 }
 

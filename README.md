@@ -1,1 +1,0 @@
-# campus-events-system
