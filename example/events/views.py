@@ -133,3 +133,37 @@ def verify_ticket(request, ticket_id):
 def my_registrations(request):
     tickets = Ticket.objects.filter(user=request.user).select_related('event')
     return render(request, 'events/my_registrations.html', {'tickets': tickets})
+
+from .forms import EventForm
+
+def profile_view(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+    
+    # Calculate stats
+    total_tickets = Ticket.objects.filter(user=request.user).count()
+    # Assuming we might have an 'organized_events' relationship or we filter events by organizers if added later
+    # For now, just user info
+    
+    return render(request, 'events/profile.html', {
+        'user': request.user,
+        'total_tickets': total_tickets
+    })
+
+def add_event_view(request):
+    if not request.user.is_authenticated:
+        messages.error(request, "You must be logged in to create an event.")
+        return redirect('login')
+        
+    if request.method == 'POST':
+        form = EventForm(request.POST, request.FILES)
+        if form.is_valid():
+            event = form.save(commit=False)
+            event.organizer = request.user  # Set the organizer to the logged-in user
+            event.save()
+            messages.success(request, "Event created successfully!")
+            return redirect('event_detail', event_id=event.id)
+    else:
+        form = EventForm()
+        
+    return render(request, 'events/add_event.html', {'form': form})

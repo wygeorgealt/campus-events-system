@@ -1,0 +1,41 @@
+{% extends 'events/base.html' %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <div class="bg-white rounded-3xl p-8 border border-gray-100 shadow-xl shadow-gray-200/50">
+        <div class="flex items-center space-x-6 mb-8">
+            <div
+                class="h-24 w-24 rounded-full bg-primary/10 flex items-center justify-center text-4xl font-black text-primary">
+                {{ user.username|make_list|first|upper }}
+            </div>
+            <div>
+                <h1 class="text-3xl font-black italic tracking-tighter text-primary">{{ user.first_name }} {{
+                    user.last_name }}</h1>
+                <p class="text-gray-500 font-medium">@{{ user.username }}</p>
+                <p class="text-gray-400 text-sm">{{ user.email }}</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+            <div class="p-6 bg-gray-50 rounded-2xl border border-gray-100">
+                <p class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Total Tickets</p>
+                <p class="text-3xl font-black text-primary">{{ total_tickets }}</p>
+            </div>
+            <div class="p-6 bg-gray-50 rounded-2xl border border-gray-100">
+                <p class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Member Since</p>
+                <p class="text-3xl font-black text-primary">{{ user.date_joined|date:"M Y" }}</p>
+            </div>
+        </div>
+
+        <div class="mt-8 pt-8 border-t border-gray-100 flex justify-end">
+            <form action="{% url 'logout' %}" method="POST">
+                {% csrf_token %}
+                <button type="submit"
+                    class="px-6 py-3 bg-red-50 text-red-600 rounded-xl font-bold text-sm hover:bg-red-100 transition-colors">
+                    Log Out
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

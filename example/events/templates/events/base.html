@@ -132,8 +132,30 @@
         {% endif %}
     </nav>
 
+    <!-- Left Navbar -->
+    {% if user.is_authenticated %}
+    <nav
+        class="fixed left-0 top-0 h-full w-20 bg-white border-r border-gray-100 flex flex-col items-center py-8 z-[90]">
+        <!-- Profile Icon -->
+        <a href="{% url 'profile' %}"
+            class="mb-4 h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold hover:bg-primary/20 transition-colors"
+            title="Profile">
+            {{ user.username|make_list|first|upper }}
+        </a>
+
+        <!-- Add Event Button -->
+        <a href="{% url 'add_event' %}"
+            class="h-10 w-10 rounded-xl bg-primary text-white flex items-center justify-center hover:bg-primary-light transition-all shadow-lg shadow-primary/20"
+            title="Create Event">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+        </a>
+    </nav>
+    {% endif %}
+
     <!-- Main Content -->
-    <main class="max-w-screen-xl mx-auto px-6 pt-24 pb-12">
+    <main class="max-w-screen-xl mx-auto px-6 pt-24 pb-12 {% if user.is_authenticated %}pl-28{% endif %}">
         {% if messages %}
         <div class="max-w-2xl mx-auto mb-8">
             {% for message in messages %}
