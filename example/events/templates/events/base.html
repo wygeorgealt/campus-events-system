@@ -5,6 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}CampusHub{% endblock %}</title>
+
+    <!-- Favicons -->
+    {% load static %}
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'favicon/apple-touch-icon.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'favicon/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'favicon/favicon-16x16.png' %}">
+    <link rel="manifest" href="{% static 'favicon/site.webmanifest' %}">
+    <link rel="shortcut icon" href="{% static 'favicon/favicon.ico' %}">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
@@ -76,13 +84,18 @@
 
 <body class="font-sans antialiased min-h-screen">
 
+    <style>
+        .logo-filter {
+            filter: brightness(0) saturate(100%) invert(22%) sepia(21%) saturate(3065%) hue-rotate(130deg) brightness(89%) contrast(97%);
+        }
+    </style>
     <!-- Compact Top Navbar -->
     <nav class="fixed top-6 right-8 z-[100]">
         {% if user.is_authenticated %}
         <div
             class="bg-white/80 backdrop-blur-md border border-gray-100 shadow-xl shadow-gray-200/50 px-6 py-3 rounded-full flex items-center space-x-8">
             <a href="{% url 'home' %}" class="flex items-center space-x-2">
-                <span class="text-xl font-black italic tracking-tighter text-primary">CH.</span>
+                <!-- Logo removed as per request -->
             </a>
 
             <div class="flex items-center space-x-6">
@@ -126,7 +139,7 @@
         {% else %}
         <div class="px-6 py-3 flex items-center">
             <a href="{% url 'home' %}" class="flex items-center space-x-2">
-                <span class="text-2xl font-black italic tracking-tighter text-primary">CampusHub.</span>
+                <img src="{% static 'events/images/wordlogo.png' %}" alt="CampusHub" class="h-10 w-auto logo-filter">
             </a>
         </div>
         {% endif %}
@@ -136,6 +149,11 @@
     {% if user.is_authenticated %}
     <nav
         class="fixed left-0 top-0 h-full w-20 bg-white border-r border-gray-100 flex flex-col items-center py-8 z-[90]">
+        <!-- Brand Logo -->
+        <a href="{% url 'home' %}" class="mb-8">
+            <img src="{% static 'events/images/mainlogo.png' %}" alt="Logo" class="h-10 w-auto logo-filter">
+        </a>
+
         <!-- Profile Icon -->
         <a href="{% url 'profile' %}"
             class="mb-4 h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold hover:bg-primary/20 transition-colors"

@@ -8,7 +8,7 @@ import random
 from datetime import timedelta
 
 class Command(BaseCommand):
-    help = 'Seeds the database with 8 sample events including images.'
+    help = 'Seeds the database with 15 sample events (10 Free, 5 Paid) using Naira prices.'
 
     def handle(self, *args, **kwargs):
         User = get_user_model()
@@ -16,103 +16,67 @@ class Command(BaseCommand):
         # Get or create an organizer
         organizer = User.objects.filter(is_superuser=True).first()
         if not organizer:
-            self.stdout.write(self.style.ERROR('No superuser found. Please create one field.'))
-            return
+            # Fallback to the first user if superuser doesn't exist/isn't found
+            organizer = User.objects.first()
+            if not organizer:
+                self.stdout.write(self.style.ERROR('No users found. Please create a user first.'))
+                return
 
         self.stdout.write(f'Seeding events for organizer: {organizer.username}...')
 
+        # Event data templates
         events_data = [
-            {
-                "title": "Campus Music Festival",
-                "description": "Join us for a night of music, food, and fun under the stars! Featuring local college bands.",
-                "price": 15.00,
-                "type": "PAID",
-                "image_url": "https://images.unsplash.com/photo-1459749411177-2fe68d506b32?q=80&w=2070&auto=format&fit=crop",
-                "bg_color": "1459749411177"
-            },
-            {
-                "title": "Tech Paradox Symposium",
-                "description": "Explore the future of AI and robotics with industry leaders.",
-                "price": 0.00,
-                "type": "FREE",
-                "image_url": "https://images.unsplash.com/photo-1540575467063-17e6fc8a627c?q=80&w=2070&auto=format&fit=crop",
-                 "bg_color": "1540575467063"
-            },
-            {
-                "title": "Art & Design Showcase",
-                "description": "A gallery walk-through of the finest student art projects of the semester.",
-                "price": 5.00,
-                "type": "PAID",
-                "image_url": "https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?q=80&w=2080&auto=format&fit=crop",
-                 "bg_color": "1460661419201"
-            },
-            {
-                "title": "Codeathon 2026",
-                "description": "24-hour coding marathon. Win prizes and get hired!",
-                "price": 10.00,
-                "type": "PAID",
-                "image_url": "https://images.unsplash.com/photo-1504384308090-c54be3855833?q=80&w=2062&auto=format&fit=crop",
-                 "bg_color": "1504384308090"
-            },
-            {
-                "title": "Sustainability Workshop",
-                "description": "Learn how to live a greener life on campus.",
-                "price": 0.00,
-                "type": "FREE",
-                "image_url": "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?q=80&w=2013&auto=format&fit=crop",
-                 "bg_color": "1542601906990"
-            },
-            {
-                "title": "Basketball Finals",
-                "description": "Cheer for the home team in the season finale!",
-                "price": 8.00,
-                "type": "PAID",
-                "image_url": "https://images.unsplash.com/photo-1546519638-68e109498ffc?q=80&w=2090&auto=format&fit=crop",
-                 "bg_color": "1546519638"
-            },
-            {
-                "title": "Startup Pitch Night",
-                "description": "Watch students pitch their business ideas to investors.",
-                "price": 0.00,
-                "type": "FREE",
-                "image_url": "https://images.unsplash.com/photo-1559223607-a43c990ed91f?q=80&w=2070&auto=format&fit=crop",
-                 "bg_color": "1559223607"
-            },
-             {
-                "title": "Midnight Movie Screening",
-                "description": "Relax with a classic movie at the student center.",
-                "price": 2.00,
-                "type": "PAID",
-                "image_url": "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=2025&auto=format&fit=crop",
-                 "bg_color": "1536440136628"
-            }
+            # 5 Paid Events
+            {"title": "Campus Music Festival", "desc": "Night of music and food!", "price": 5000.00, "type": "PAID", "cat": "music"},
+            {"title": "Grand Gala Dinner", "desc": "Annual end-of-year formal dinner.", "price": 15000.00, "type": "PAID", "cat": "party"},
+            {"title": "Tech Masterclass", "desc": "Advanced Python & AI workshop.", "price": 25000.00, "type": "PAID", "cat": "tech"},
+            {"title": "Cinema Night: Premiere", "desc": "Exclusive screening of the latest blockbuster.", "price": 3000.00, "type": "PAID", "cat": "movie"},
+            {"title": "VIP Networking Brunch", "desc": "Connect with industry leaders over brunch.", "price": 10000.00, "type": "PAID", "cat": "business"},
+            
+            # 10 Free Events
+            {"title": "Freshers Orientation", "desc": "Welcome guide for new students.", "price": 0.00, "type": "FREE", "cat": "school"},
+            {"title": "Library Book Club", "desc": "Weekly discussion on selected readings.", "price": 0.00, "type": "FREE", "cat": "book"},
+            {"title": "Campus Clean-up Drive", "desc": "Volunteer to keep our campus green.", "price": 0.00, "type": "FREE", "cat": "nature"},
+            {"title": "Morning Yoga Session", "desc": "Start your day with mindfulness.", "price": 0.00, "type": "FREE", "cat": "yoga"},
+            {"title": "Career Fair 2026", "desc": "Meet recruiters from top companies.", "price": 0.00, "type": "FREE", "cat": "job"},
+            {"title": "Open Mic Night", "desc": "Showcase your talent! Poetry, music, comedy.", "price": 0.00, "type": "FREE", "cat": "mic"},
+            {"title": "Study Group: Calculus", "desc": "exam prep group study.", "price": 0.00, "type": "FREE", "cat": "math"},
+            {"title": "Art Exhibition Opening", "desc": "Support local student artists.", "price": 0.00, "type": "FREE", "cat": "art"},
+            {"title": "Debate Club Meetup", "desc": "Topic: AI Ethics.", "price": 0.00, "type": "FREE", "cat": "debate"},
+            {"title": "End of Semester Party", "desc": "Celebrate surviving the exams!", "price": 0.00, "type": "FREE", "cat": "party"},
         ]
 
+        # Process each event
         for i, data in enumerate(events_data):
-            # Check if event exists
+            # Check if event exists to avoid duplicates if run multiple times without clearing
             if Event.objects.filter(title=data['title']).exists():
                  self.stdout.write(self.style.WARNING(f"Event '{data['title']}' already exists. Skipping."))
                  continue
 
-            self.stdout.write(f"Creating event: {data['title']}")
+            self.stdout.write(f"Creating event ({i+1}/15): {data['title']}")
             
             # Create Event instance
             event = Event(
                 title=data['title'],
-                description=data['description'],
+                description=data['desc'] + " " + "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
                 price=data['price'],
                 event_type=data['type'],
-                capacity=100 + (i * 50),
+                capacity=random.randint(50, 500),
                 organizer=organizer,
-                event_date=timezone.now() + timedelta(days=i*7 + 2)
+                event_date=timezone.now() + timedelta(days=i*3 + 2)
             )
 
-            # Fetch image
+            # Use Picsum for reliable random images
+            # Adding a random seed to URL ensures we get different images but they are stable per run if needed
+            image_url = f"https://picsum.photos/seed/{i+100}/800/600"
+
             try:
-                headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'}
-                response = requests.get(data['image_url'], headers=headers, timeout=10)
+                # User-Agent is good practice even for Picsum
+                headers = {'User-Agent': 'Mozilla/5.0'}
+                response = requests.get(image_url, headers=headers, timeout=15)
+                
                 if response.status_code == 200:
-                    file_name = f"event_{data['bg_color']}.jpg"
+                    file_name = f"event_{i}_{random.randint(1000,9999)}.jpg"
                     event.image.save(file_name, ContentFile(response.content), save=False)
                 else:
                     self.stdout.write(self.style.WARNING(f"Failed to download image for {data['title']}: Status {response.status_code}"))
@@ -122,4 +86,4 @@ class Command(BaseCommand):
             event.save()
             self.stdout.write(self.style.SUCCESS(f"Successfully created '{data['title']}'"))
 
-        self.stdout.write(self.style.SUCCESS('Seeding complete!'))
+        self.stdout.write(self.style.SUCCESS('Seeding complete! 15 Events Created.'))
