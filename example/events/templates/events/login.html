@@ -1,24 +1,96 @@
-<style>
-    body { background: #36393f; color: white; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-    .auth-box { background: #2f3136; padding: 40px; border-radius: 8px; width: 320px; display: flex; flex-direction: column; }
-    input { background: #202225; border: none; padding: 12px; margin-bottom: 15px; border-radius: 4px; color: white; width: 100%; box-sizing: border-box; }
-    button { background: #5865f2; color: white; border: none; padding: 12px; border-radius: 4px; font-weight: bold; cursor: pointer; }
-</style>
+{% extends 'events/base.html' %}
+{% load static %}
 
-<div class="auth-box">
-    {% if messages %}
-    {% for message in messages %}
-        <p style="color: #ff4747; font-size: 0.85rem; text-align: center;">{{ message }}</p>
-    {% endfor %}
-{% endif %}
-    <h2 style="text-align: center;">Welcome Back</h2>
-    <form method="POST">
-        {% csrf_token %}
-        <input type="text" name="username" placeholder="Username" required>
-        <input type="password" name="password" placeholder="Password" required>
-        <button type="submit">Login</button>
-    </form>
-    <p style="font-size: 0.8rem; text-align: center; margin-top: 15px;">
-        Need an account? <a href="{% url 'signup' %}" style="color: #5865f2;">Sign Up</a>
-    </p>
+{% block title %}Sign In | CampusHub{% endblock %}
+
+{% block content %}
+<div class="min-h-[80vh] flex items-center justify-center py-12 px-4">
+    <div class="max-w-5xl w-full grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+
+        <!-- Left Column: Branding & Explanation -->
+        <div class="hidden md:block space-y-8 animate-in fade-in slide-in-from-left duration-1000">
+            <div class="relative group">
+                <div
+                    class="absolute -inset-1 bg-gradient-to-r from-primary to-primary-light rounded-3xl blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200">
+                </div>
+                <img src="{% static 'events/images/promo2.png' %}" alt="Campus Life"
+                    class="relative rounded-3xl shadow-2xl border border-white/20 object-cover w-full aspect-[4/5] transform group-hover:scale-[1.01] transition-transform duration-500">
+            </div>
+
+            <div class="space-y-4 pr-12">
+                <h2 class="text-4xl font-black italic tracking-tighter text-primary">Discover your campus.</h2>
+                <p class="text-gray-500 font-medium leading-relaxed">
+                    Join **CampusHub**, the exclusive social network for your university. Stay updated with the latest
+                    events, manage your tickets, and connect with fellow students—all in one place.
+                </p>
+                <div class="flex items-center space-x-6 pt-4">
+                    <div class="flex -space-x-3">
+                        {% for i in "1234" %}
+                        <div
+                            class="w-8 h-8 rounded-full border-2 border-white bg-gray-100 flex items-center justify-center text-[10px] font-black italic text-primary">
+                            CH</div>
+                        {% endfor %}
+                    </div>
+                    <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Joined by 2,000+ Students
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Login Form -->
+        <div class="animate-in fade-in slide-in-from-right duration-1000">
+            <div class="bg-white p-10 rounded-[3rem] border border-gray-100 shadow-2xl shadow-gray-200/50 space-y-8">
+                <div class="text-center space-y-2">
+                    <h1 class="text-3xl font-black italic tracking-tighter text-primary md:hidden">CampusHub.</h1>
+                    <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">Sign in to join the community
+                    </p>
+                </div>
+
+                <form method="POST" class="space-y-6">
+                    {% csrf_token %}
+
+                    <div class="space-y-2">
+                        <label
+                            class="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-4">Username</label>
+                        <input type="text" name="username" id="id_username"
+                            class="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-gray-100 focus:border-primary focus:ring-4 focus:ring-primary/5 transition-all outline-none font-medium placeholder-gray-300"
+                            placeholder="Enter your username" required>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label
+                            class="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 ml-4">Password</label>
+                        <input type="password" name="password" id="id_password"
+                            class="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-gray-100 focus:border-primary focus:ring-4 focus:ring-primary/5 transition-all outline-none font-medium placeholder-gray-300"
+                            placeholder="Enter your password" required>
+                    </div>
+
+                    <button type="submit"
+                        class="w-full py-5 rounded-2xl bg-primary hover:bg-primary-light text-white font-black uppercase tracking-[0.2em] shadow-xl shadow-primary/20 transition-all active:scale-[0.98]">
+                        Sign In
+                    </button>
+                </form>
+
+                <div class="relative py-4">
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="w-full border-t border-gray-100"></div>
+                    </div>
+                    <div class="relative flex justify-center text-[10px] uppercase font-bold tracking-widest">
+                        <span class="bg-white px-4 text-gray-300">OR</span>
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <p class="text-xs text-gray-400 font-bold uppercase tracking-widest">
+                        Don't have an account?
+                        <a href="{% url 'signup' %}"
+                            class="text-primary hover:text-primary-light transition-colors">Create one</a>
+                    </p>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
 </div>
+{% endblock %}

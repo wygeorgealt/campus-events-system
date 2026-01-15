@@ -1,0 +1,44 @@
+{% extends 'events/base.html' %}
+
+{% block title %}Verify Ticket | CampusHub{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto py-20 px-6 text-center">
+    <div class="space-y-10 animate-in fade-in zoom-in duration-500">
+        <!-- Success State -->
+        <div class="w-32 h-32 bg-primary/10 rounded-full flex items-center justify-center mx-auto text-primary">
+            <svg class="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+            </svg>
+        </div>
+
+        <div class="space-y-4">
+            <h1 class="text-4xl font-black italic tracking-tighter text-primary uppercase">Valid Ticket</h1>
+            <p class="text-sm font-bold text-gray-400 uppercase tracking-widest">Verification Successful</p>
+        </div>
+
+        <div
+            class="bg-gray-50 p-8 rounded-[2.5rem] border border-gray-100 text-left space-y-4 shadow-xl shadow-gray-200/50">
+            <div class="flex justify-between items-center text-xs font-black uppercase tracking-widest text-gray-400">
+                <span>Event Name</span>
+                <span class="text-gray-900">{{ ticket.event.title }}</span>
+            </div>
+            <div class="flex justify-between items-center text-xs font-black uppercase tracking-widest text-gray-400">
+                <span>Attendee</span>
+                <span class="text-gray-900">{{ ticket.user.get_full_name|default:ticket.user.username }}</span>
+            </div>
+            <div class="flex justify-between items-center text-xs font-black uppercase tracking-widest text-gray-400">
+                <span>Status</span>
+                <span class="px-3 py-1 bg-primary text-white text-[10px] rounded-full">CHECKED IN</span>
+            </div>
+        </div>
+
+        <div class="pt-10">
+            <a href="{% url 'home' %}"
+                class="px-10 py-4 bg-primary text-white text-xs font-black uppercase tracking-widest rounded-full shadow-2xl shadow-primary/20 hover:scale-105 transition-all inline-block">
+                Back to Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

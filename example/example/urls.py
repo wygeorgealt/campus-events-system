@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
-from events.views import event_feed, register_event, signup_view, login_view, event_detail, calendar_view
+from events.views import event_feed, register_event, signup_view, login_view, event_detail, calendar_view, verify_ticket, my_registrations
 from django.contrib.auth.views import LogoutView
 
 urlpatterns = [
@@ -13,7 +13,9 @@ urlpatterns = [
     path('logout/', LogoutView.as_view(next_page='home'), name='logout'),
     path('login/', login_view, name='login'),
     path('event/<str:event_id>/', event_detail, name='event_detail'),
-    path('calendar/', calendar_view, name='calendar'), # 2. Add this line
+    path('calendar/', calendar_view, name='calendar'),
+    path('verify/<str:ticket_id>/', verify_ticket, name='verify_ticket'),
+    path('my-tickets/', my_registrations, name='my_registrations'),
 ]
 
 # Only add this ONCE at the very bottom

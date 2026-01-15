@@ -1,51 +1,124 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Campus Calendar</title>
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
-    <style>
-        body { background: #36393f; color: white; font-family: sans-serif; margin: 0; display: flex; height: 100vh; }
-        .sidebar { width: 240px; background: #2f3136; padding: 20px; border-right: 1px solid #202225; }
-        .calendar-container { flex-grow: 1; padding: 40px; overflow-y: auto; }
-        #calendar { background: #2f3136; padding: 20px; border-radius: 12px; color: white; }
-        /* Style the calendar to look like Discord */
-        .fc-toolbar-title { color: white !important; }
-        .fc-daygrid-day-number { color: #b9bbbe !important; text-decoration: none; }
-        .fc-col-header-cell-cushion { color: #5865f2 !important; text-decoration: none; }
-        .fc-event { cursor: pointer; background-color: #5865f2 !important; border: none !important; }
-    </style>
-</head>
-<body>
-    <div class="sidebar">
-        <h2 style="font-size: 18px;">Events</h2>
-        <a href="{% url 'home' %}" style="color: #b9bbbe; text-decoration: none; display: block; margin-bottom: 10px;">🏠 Back to Feed</a>
+{% extends 'events/base.html' %}
+
+{% block title %}Calendar | CampusHub{% endblock %}
+
+{% block extra_head %}
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
+<style>
+    :root {
+        --fc-border-color: #f3f4f6;
+        --fc-daygrid-event-dot-width: 8px;
+        --fc-today-bg-color: #ecfdf5;
+        --fc-button-bg-color: #064e3b;
+        --fc-button-border-color: #064e3b;
+        --fc-button-hover-bg-color: #065f46;
+        --fc-button-active-bg-color: #065f46;
+        --fc-event-bg-color: #064e3b;
+        --fc-event-border-color: #064e3b;
+    }
+
+    .fc {
+        font-family: 'Outfit', sans-serif;
+        background: white;
+        border-radius: 2rem;
+        padding: 2rem;
+        border: 1px solid #f3f4f6;
+        box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.05);
+    }
+
+    .fc-toolbar-title {
+        font-weight: 900 !important;
+        font-style: italic !important;
+        letter-spacing: -0.05em !important;
+        text-transform: uppercase !important;
+    }
+
+    .fc-col-header-cell-cushion {
+        font-size: 10px !important;
+        font-weight: 900 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.1em !important;
+        color: #9ca3af !important;
+    }
+
+    .fc-daygrid-day-number {
+        font-weight: 700 !important;
+        font-size: 14px !important;
+        color: #374151 !important;
+    }
+
+    .fc-event {
+        border-radius: 8px !important;
+        padding: 4px 8px !important;
+        font-weight: 700 !important;
+        font-size: 11px !important;
+        box-shadow: 0 4px 6px -1px rgb(6 78 59 / 0.2);
+        transition: all 0.2s ease;
+    }
+
+    .fc-event:hover {
+        transform: translateY(-2px);
+        opacity: 0.9;
+    }
+
+    .fc-button {
+        border-radius: 12px !important;
+        font-weight: 800 !important;
+        text-transform: uppercase !important;
+        font-size: 10px !important;
+        letter-spacing: 0.1em !important;
+    }
+
+    .fc-theme-standard td,
+    .fc-theme-standard th {
+        border: 1px solid #f3f4f6 !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto space-y-12">
+    <div class="flex items-center justify-between px-2">
+        <div class="space-y-1">
+            <h1 class="text-4xl font-black italic tracking-tighter text-gray-900">Campus Events</h1>
+            <p class="text-xs font-bold uppercase tracking-widest text-gray-400">Discover what's happening this month
+            </p>
+        </div>
+        <a href="{% url 'home' %}"
+            class="px-6 py-2 border-2 border-primary text-primary text-[10px] font-black uppercase tracking-widest rounded-full hover:bg-primary hover:text-white transition-all">
+            Back to Feed
+        </a>
     </div>
 
-    <div class="calendar-container">
-        <div id="calendar"></div>
+    <div id='calendar-container' class="animate-in fade-in zoom-in duration-700 min-h-[600px]">
+        <div id='calendar'></div>
     </div>
-
-    {{ events_json|json_script:"event-data" }}
+</div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var calendarEl = document.getElementById('calendar');
-        
-        // 2. We extract the data using the ID we just created
-        var eventData = JSON.parse(document.getElementById('event-data').textContent);
-        
-        // 3. We use the 'eventData' variable instead of the curly braces
-        var calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: 'dayGridMonth',
-            height: 'auto',
-            events: eventData, // Linter is happy now!
-            eventClick: function(info) {
-                if (info.event.url) {
-                    window.location.href = info.event.url;
-                    return false;
-                }
+    document.addEventListener('DOMContentLoaded', function () {
+        const calendarEl = document.getElementById('calendar');
+        const events = {{ events_json| safe
+    }};
+
+    const calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek'
+        },
+        events: events,
+        eventClick: function (info) {
+            if (info.event.url) {
+                window.location.href = info.event.url;
+                return false;
             }
-        });
-        calendar.render();
+        },
+        height: 'auto',
+        dayMaxEvents: true
+    });
+    calendar.render();
     });
 </script>
+{% endblock %}

@@ -1,109 +1,137 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Campus Events</title>
-    <style>
-        body { background: #36393f; color: white; font-family: 'Helvetica', sans-serif; display: flex; margin: 0; height: 100vh; overflow: hidden; }
-        
-        .sidebar { width: 240px; background: #2f3136; padding: 20px; display: flex; flex-direction: column; border-right: 1px solid #202225; flex-shrink: 0; }
-        .sidebar h2 { font-size: 18px; margin-bottom: 20px; color: #fff; }
-        .club-link { padding: 10px; border-radius: 4px; cursor: pointer; color: #b9bbbe; text-decoration: none; margin-bottom: 5px; display: block; }
-        .club-link:hover { background: #393d42; color: white; }
-        .active { background: #4f545c; color: white; }
+{% extends 'events/base.html' %}
 
-        .feed-container { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; align-items: center; padding: 40px 20px; height: 100vh; }
-        .post { background: #ffffff; color: #2c2f33; border-radius: 12px; width: 480px; margin-bottom: 40px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.4); flex-shrink: 0; }
-        .post img { width: 100%; height: 400px; object-fit: cover; border-bottom: 1px solid #f0f0f0; }
-        .post-content { padding: 20px; }
-        .post-title { font-weight: bold; font-size: 1.3rem; margin: 0 0 10px 0; }
-        .post-desc { color: #4f545c; margin-bottom: 20px; line-height: 1.5; }
-        
-        .reg-btn { background: #5865f2; color: white; border: none; padding: 14px; width: 100%; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 1rem; }
-        .reg-btn:hover { background: #4752c4; }
-        .reg-btn:disabled { background: #4f545c; cursor: not-allowed; }
-        .stats { font-size: 0.85rem; color: #72767d; margin-top: 15px; text-align: center; }
+{% block title %}Feed | CampusHub{% endblock %}
 
-        /* FIXED CSS CLASSES */
-        .messages { width: 100%; max-width: 480px; margin-bottom: 20px; flex-shrink: 0; }
-        .alert { padding: 10px; border-radius: 4px; color: white; text-align: center; }
-        .alert-success { background: #3ba55c; }
-        .alert-error { background: #f04747; }
-    </style>
-</head>
-<body>
-    <div class="sidebar">
-        <h2>Clubs & Orgs</h2>
-        <a href="/" class="club-link active">🏠 Global Feed</a>
-        <a href="{% url 'calendar' %}" class="club-link">📅 Event Calendar</a>
-        
-        <hr style="border: 0.5px solid #4f545c; width: 100%; margin: 10px 0;">
-
-        {% if not user.is_authenticated %}
-            <a href="{% url 'login' %}" class="club-link" style="color: #b9bbbe;">🔑 Login</a>
-            <a href="{% url 'signup' %}" class="club-link" style="color: #5865f2;">✨ Sign Up</a>
-        {% else %}
-            <div class="club-link" style="color: #fff; cursor: default;">
-                <small style="color: #b9bbbe; display: block;">
-                    {% if user.is_staff %}🛡️ Admin{% else %}🎓 Student{% endif %}
-                </small>
-                👤 {{ user.username }}
-            </div>
-
-            {% if user.is_staff %}
-                <div style="padding: 10px 10px 5px; font-size: 0.75rem; color: #72767d; text-transform: uppercase; letter-spacing: 1px;">Management</div>
-                <a href="/admin/events/event/add/" class="club-link" style="color: #3ba55c;">➕ Post Event</a>
-                <a href="/admin/events/event/" class="club-link">⚙️ Admin Dashboard</a>
-            {% else %}
-                <a href="#" class="club-link">📝 My Registrations</a>
-            {% endif %}
-
-            <hr style="border: 0.5px solid #4f545c; width: 100%; margin: 10px 0;">
-            
-            <form action="{% url 'logout' %}" method="POST" style="display: inline;">
-                {% csrf_token %}
-                <button type="submit" class="club-link" style="background: none; border: none; width: 100%; text-align: left; font-size: inherit; cursor: pointer;">
-                    🚪 Logout
-                </button>
-            </form>
-        {% endif %}
-    </div>
-
-    <div class="feed-container">
-        {% if messages %}
-            <div class="messages">
-                {% for message in messages %}
-                    <div class="alert {% if message.tags == 'error' %}alert-error{% else %}alert-success{% endif %}">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            </div>
-        {% endif %}
-
-        <h1 style="margin-bottom: 30px;">Campus Happenings</h1>
-        
+{% block content %}
+<div class="max-w-xl mx-auto space-y-12 pt-4">
+    <!-- Feed List -->
+    <div class="space-y-16">
         {% for event in events %}
-        <div class="post">
-            {% if event.image %}
-                <img src="{{ event.image.url }}" alt="{{ event.title }}">
-            {% endif %}
-            <div class="post-content">
-                <p class="post-title">{{ event.title }}</p>
-                <p class="post-desc">{{ event.description }}</p>
-                <a href="{% url 'event_detail' event.id %}" class="reg-btn" 
-                    style="text-decoration: none; display: block; text-align: center; box-sizing: border-box; width: 100%;">
-                     {% if event.signed_up_count >= event.capacity %}
-                         View Details (Full)
-                     {% else %}
-                         View & Sign Up
-                     {% endif %}
-                </a>
-                
-                <div class="stats">
-                    Capacity: <strong>{{ event.signed_up_count }} / {{ event.capacity }}</strong> students
+        <article class="bg-white group overflow-hidden">
+            <!-- Header: Organizer Info -->
+            <div class="flex items-center justify-between px-2 py-4">
+                <div class="flex items-center space-x-3">
+                    <div
+                        class="w-10 h-10 rounded-full bg-gradient-to-tr from-primary to-primary-light flex items-center justify-center text-white text-xs font-black shadow-lg shadow-primary/20">
+                        {{ event.organizer.username|slice:":2"|upper }}
+                    </div>
+                    <div>
+                        <p class="text-sm font-bold tracking-tight">{{ event.organizer.username }}</p>
+                        <p class="text-[10px] text-gray-500 font-medium uppercase tracking-wider">Campus Organizer</p>
+                    </div>
+                </div>
+                <button class="text-gray-400 hover:text-gray-900 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Main Image -->
+            <div
+                class="aspect-[4/3] w-full rounded-2xl overflow-hidden border border-gray-100 shadow-sm relative group-hover:shadow-xl group-hover:shadow-gray-200/50 transition-all duration-500">
+                {% if event.image %}
+                <img src="{{ event.image.url }}" alt="{{ event.title }}"
+                    class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                {% else %}
+                <div class="w-full h-full bg-gray-50 flex items-center justify-center">
+                    <svg class="w-20 h-20 text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
+                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
+                        </path>
+                    </svg>
+                </div>
+                {% endif %}
+
+                <!-- Floating Type Badge -->
+                <div class="absolute top-4 right-4">
+                    <span
+                        class="px-3 py-1 scale-90 backdrop-blur-md {% if event.event_type == 'PAID' %}bg-black/60{% else %}bg-primary/60{% endif %} text-white text-[10px] font-black uppercase tracking-widest rounded-full border border-white/20">
+                        {{ event.event_type }}
+                    </span>
                 </div>
             </div>
+
+            <!-- Interactions & Content -->
+            <div class="py-6 space-y-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <button
+                            onclick="openShareModal('{{ request.scheme }}://{{ request.get_host }}{% url 'event_detail' event.id %}')"
+                            class="hover:scale-110 transition-transform text-gray-900 flex items-center justify-center">
+                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                    d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z">
+                                </path>
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="text-xl font-black text-primary">
+                        {% if event.price > 0 %}
+                        ${{ event.price }}
+                        {% else %}
+                        FREE
+                        {% endif %}
+                    </p>
+                </div>
+
+                <div class="space-y-2">
+                    <p
+                        class="text-sm font-black italic uppercase tracking-tighter text-gray-900 group-hover:text-primary transition-colors">
+                        {{ event.title }}
+                    </p>
+                    <p class="text-sm text-gray-600 leading-relaxed line-clamp-2">
+                        {{ event.description }}
+                    </p>
+                </div>
+
+                <!-- Availability Progress Bar -->
+                <div class="pt-2 space-y-1.5">
+                    <div
+                        class="flex items-center justify-between text-[10px] font-black uppercase tracking-widest text-gray-400">
+                        <span>Availability</span>
+                        <span class="text-primary">{{ event.signed_up_count }} / {{ event.capacity }} Reserved</span>
+                    </div>
+                    <div class="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden shadow-inner">
+                        {% widthratio event.signed_up_count event.capacity 100 as percentage %}
+                        <div class="h-full bg-primary rounded-full transition-all duration-1000 ease-out"
+                            style="width: {{ percentage }}%"></div>
+                    </div>
+                </div>
+
+                <!-- Date & Call to Action -->
+                <div class="flex items-center justify-between pt-4">
+                    <div class="flex items-center space-x-2 text-gray-400">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span class="text-[10px] font-bold uppercase tracking-wider">
+                            {{ event.event_date|date:"F j, Y - g:i A" }}
+                        </span>
+                    </div>
+                    <a href="{% url 'event_detail' event.id %}"
+                        class="text-xs font-black uppercase tracking-widest text-primary hover:text-primary-light transition-colors border-b-2 border-primary/20 pb-0.5">
+                        Details
+                    </a>
+                </div>
+            </div>
+        </article>
+        {% empty %}
+        <div class="py-20 text-center space-y-4">
+            <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto text-gray-300">
+                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
+                        d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4a2 2 0 012-2m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4">
+                    </path>
+                </svg>
+            </div>
+            <h3 class="text-lg font-bold">No events posted today.</h3>
+            <p class="text-sm text-gray-500">Check back soon for new campus activities!</p>
         </div>
         {% endfor %}
     </div>
-</body>
-</html>
+</div>
+{% endblock %}

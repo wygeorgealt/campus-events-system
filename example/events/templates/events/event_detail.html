@@ -1,46 +1,180 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>{{ event.title }} | Campus Events</title>
-    <style>
-        body { background: #36393f; color: white; font-family: sans-serif; display: flex; justify-content: center; padding: 40px; }
-        .detail-card { background: #2f3136; border-radius: 12px; width: 600px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .detail-img { width: 100%; height: 350px; object-fit: cover; }
-        .content { padding: 30px; }
-        .title { font-size: 2rem; font-weight: bold; margin-bottom: 10px; }
-        .desc { color: #b9bbbe; line-height: 1.6; margin-bottom: 30px; }
-        .info-bar { display: flex; justify-content: space-between; background: #202225; padding: 15px; border-radius: 8px; margin-bottom: 30px; }
-        .confirm-btn { background: #3ba55c; color: white; border: none; padding: 18px; width: 100%; border-radius: 6px; font-weight: bold; font-size: 1.1rem; cursor: pointer; }
-        .confirm-btn:hover { background: #2d7d46; }
-        .back-link { display: block; text-align: center; margin-top: 20px; color: #72767d; text-decoration: none; }
-    </style>
-</head>
-<body>
-    <div class="detail-card">
-        {% if event.image %}
-            <img src="{{ event.image.url }}" class="detail-img">
-        {% endif %}
-        
-        <div class="content">
-            <div class="title">{{ event.title }}</div>
-            <p class="desc">{{ event.description }}</p>
+{% extends 'events/base.html' %}
 
-            <div class="info-bar">
-                <span>📍 Campus Main Hall</span>
-                <span>👥 {{ event.signed_up_count }} / {{ event.capacity }} Joined</span>
-            </div>
+{% block title %}{{ event.title }} | CampusHub{% endblock %}
 
-            {% if user.is_authenticated %}
-                <form action="{% url 'register_event' event.id %}" method="POST">
-                    {% csrf_token %}
-                    <button type="submit" class="confirm-btn">Confirm Registration</button>
-                </form>
+{% block content %}
+<div class="max-w-2xl mx-auto space-y-12 pb-20">
+    <!-- Back Button -->
+    <a href="{% url 'home' %}"
+        class="inline-flex items-center space-x-2 text-gray-400 hover:text-primary transition-colors group">
+        <svg class="w-5 h-5 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor"
+            viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+        </svg>
+        <span class="text-xs font-black uppercase tracking-widest">Back to Feed</span>
+    </a>
+
+    <!-- Detail Container -->
+    <div class="space-y-10">
+        <!-- Event Image Section -->
+        <div
+            class="aspect-[4/3] w-full rounded-[2.5rem] overflow-hidden border border-gray-100 shadow-2xl shadow-gray-200/50 relative">
+            {% if event.image %}
+            <img src="{{ event.image.url }}" alt="{{ event.title }}" class="w-full h-full object-cover">
             {% else %}
-                <a href="{% url 'login' %}" class="confirm-btn" style="text-decoration: none; display: block; text-align: center;">Login to Sign Up</a>
+            <div class="w-full h-full bg-gray-50 flex items-center justify-center">
+                <svg class="w-24 h-24 text-gray-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
+                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
+                    </path>
+                </svg>
+            </div>
             {% endif %}
 
-            <a href="/" class="back-link">← Back to Feed</a>
+            <div class="absolute bottom-6 left-8">
+                <span
+                    class="px-5 py-2 bg-primary text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-full shadow-xl shadow-primary/30">
+                    {{ event.event_type }} event
+                </span>
+            </div>
+        </div>
+
+        <!-- Info Grid -->
+        <div class="space-y-10 px-2">
+            <div class="space-y-4">
+                <h1 class="text-4xl md:text-5xl font-black italic tracking-tighter leading-none text-gray-900">
+                    {{ event.title }}
+                </h1>
+                <div class="flex flex-wrap items-center gap-4 text-gray-400">
+                    <div class="flex items-center space-x-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+                            </path>
+                        </svg>
+                        <span class="text-xs font-bold uppercase tracking-widest">
+                            {{ event.event_date|date:"l, F j @ g:i A" }}
+                        </span>
+                    </div>
+                    <div class="w-1.5 h-1.5 rounded-full bg-gray-100"></div>
+                    <div class="flex items-center space-x-2 text-gray-400">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z">
+                            </path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                        <span class="text-xs font-bold uppercase tracking-widest">Main Campus Hall</span>
+                    </div>
+                    <div class="w-1.5 h-1.5 rounded-full bg-gray-100"></div>
+                    <button
+                        onclick="openShareModal('{{ request.scheme }}://{{ request.get_host }}{% url 'event_detail' event.id %}')"
+                        class="flex items-center space-x-2 text-primary hover:text-primary-light transition-all rounded-full bg-primary-soft px-4 py-1.5 border border-primary/10">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z">
+                            </path>
+                        </svg>
+                        <span class="text-[10px] font-black uppercase tracking-widest">Share Event</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Price & Capacity -->
+            <div class="flex items-center space-x-4">
+                <div class="flex-grow bg-gray-50 p-6 rounded-3xl border border-gray-100 flex flex-col items-center">
+                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Price</p>
+                    <p class="text-2xl font-black text-primary">
+                        {% if event.price > 0 %}
+                        ${{ event.price }}
+                        {% else %}
+                        FREE
+                        {% endif %}
+                    </p>
+                </div>
+                <div class="flex-grow bg-gray-50 p-6 rounded-3xl border border-gray-100 flex flex-col items-center">
+                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Joined</p>
+                    <p class="text-2xl font-black text-gray-900">{{ event.signed_up_count }} / {{ event.capacity }}</p>
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div class="prose prose-gray max-w-none">
+                <p class="text-gray-600 text-lg leading-relaxed font-medium">
+                    {{ event.description }}
+                </p>
+            </div>
+
+            <hr class="border-gray-100">
+
+            {% widthratio event.signed_up_count event.capacity 100 as percentage %}
+            <!-- Progress Bar Redux -->
+            <div class="space-y-3">
+                <div class="flex justify-between items-end">
+                    <div class="space-y-1">
+                        <p class="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Registration Bar</p>
+                        <p class="text-sm font-bold text-gray-900">{{ percentage }}% spots filled</p>
+                    </div>
+                    <div class="flex -space-x-3">
+                        <div
+                            class="w-10 h-10 rounded-full border-4 border-white bg-primary text-white flex items-center justify-center text-[10px] font-black">
+                            JD</div>
+                        <div
+                            class="w-10 h-10 rounded-full border-4 border-white bg-primary/40 text-primary flex items-center justify-center text-[10px] font-black">
+                            SK</div>
+                        <div
+                            class="w-10 h-10 rounded-full border-4 border-white bg-gray-100 text-gray-400 flex items-center justify-center text-[10px] font-black">
+                            +{{ event.signed_up_count }}</div>
+                    </div>
+                </div>
+                <div class="h-3 w-full bg-gray-100 rounded-full overflow-hidden shadow-inner">
+                    <div class="h-full bg-primary rounded-full transition-all duration-1000 ease-out"
+                        style="width: {{ percentage }}%"></div>
+                </div>
+            </div>
+
+            <!-- Call to Action -->
+            <div class="pt-6">
+                {% if is_registered %}
+                <div class="space-y-4">
+                    <div
+                        class="w-full py-6 rounded-3xl bg-primary/10 text-primary border border-primary/20 flex items-center justify-center space-x-3">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7">
+                            </path>
+                        </svg>
+                        <span class="text-xs font-black uppercase tracking-[0.2em]">You are Registered</span>
+                    </div>
+                    <form action="{% url 'register_event' event.id %}" method="POST">
+                        {% csrf_token %}
+                        <button type="submit"
+                            class="w-full text-[10px] font-black uppercase tracking-widest text-primary hover:underline transition-all">
+                            Need another copy? Click to download ticket
+                        </button>
+                    </form>
+                </div>
+                {% elif event.signed_up_count >= event.capacity %}
+                <button disabled
+                    class="w-full py-6 rounded-3xl bg-gray-100 text-gray-400 font-black uppercase tracking-widest cursor-not-allowed">
+                    Event is Sold Out
+                </button>
+                {% else %}
+                <form action="{% url 'register_event' event.id %}" method="POST">
+                    {% csrf_token %}
+                    <button type="submit"
+                        class="w-full py-6 rounded-3xl bg-primary hover:bg-primary-light text-white font-black uppercase tracking-[0.3em] shadow-2xl shadow-primary/30 transition-all active:scale-[0.98] flex items-center justify-center space-x-3 group">
+                        <span>{% if event.event_type == 'PAID' %}Request Access{% else %}Secure Spot{% endif %}</span>
+                        <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </button>
+                </form>
+                {% endif %}
+            </div>
         </div>
     </div>
-</body>
-</html>
+</div>
+{% endblock %}

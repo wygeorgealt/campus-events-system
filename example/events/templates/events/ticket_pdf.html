@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        @page {
+            size: 8in 3.5in;
+            margin: 0.25in;
+        }
+
+        body {
+            font-family: Helvetica, sans-serif;
+            color: #111827;
+            margin: 0;
+            padding: 0;
+        }
+
+        .ticket-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            width: 100%;
+        }
+
+        .main-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .left-panel {
+            width: 70%;
+            padding: 20px;
+            vertical-align: top;
+        }
+
+        .right-panel {
+            width: 30%;
+            padding: 20px;
+            text-align: center;
+            vertical-align: middle;
+            background-color: #ffffff;
+            border-left: 2px dashed #e5e7eb;
+        }
+
+        .brand {
+            font-size: 16px;
+            font-weight: bold;
+            color: #064e3b;
+            font-style: italic;
+            margin-bottom: 5px;
+        }
+
+        .badge {
+            background-color: #ecfdf5;
+            color: #064e3b;
+            font-size: 8px;
+            font-weight: bold;
+            padding: 2px 8px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        .event-title {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 12px;
+            color: #111827;
+        }
+
+        .info-table {
+            width: 100%;
+        }
+
+        .label {
+            font-size: 8px;
+            color: #9ca3af;
+            text-transform: uppercase;
+            font-weight: bold;
+            margin-bottom: 2px;
+        }
+
+        .value {
+            font-size: 11px;
+            font-weight: bold;
+            color: #111827;
+        }
+
+        .qr-placeholder {
+            margin-bottom: 8px;
+        }
+
+        .ticket-id {
+            font-family: monospace;
+            font-size: 8px;
+            color: #9ca3af;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="ticket-card">
+        <table class="main-table">
+            <tr>
+                <!-- Left Details Area -->
+                <td class="left-panel">
+                    <div class="brand">CampusHub.</div>
+                    <div class="badge">OFFICIAL ADMISSION</div>
+                    <div class="event-title">{{ ticket.event.title }}</div>
+                    <table class="info-table">
+                        <tr>
+                            <td style="width: 50%; padding-bottom: 12px;">
+                                <div class="label">Date & Time</div>
+                                <div class="value">
+                                    {{ ticket.event.event_date|date:"l, F j, Y" }}
+                                </div>
+                                <div class="value" style="font-weight: normal;">
+                                    {{ ticket.event.event_date|date:"g:i A" }}
+                                </div>
+                            </td>
+                            <td style="padding-bottom: 12px;">
+                                <div class="label">Attendee</div>
+                                <div class="value">
+                                    {{ ticket.user.get_full_name|default:ticket.user.username }}
+                                </div>
+                                <div class="value" style="font-weight: normal; color: #6b7280; font-size: 9px;">
+                                    {{ ticket.user.email }}
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="label">Location</div>
+                                <div class="value">Main Campus Hall</div>
+                            </td>
+                            <td>
+                                <div class="label">Access Level</div>
+                                <div class="value">
+                                    {{ ticket.event.event_type }} ADMISSION
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+                <!-- Right QR Sidebar Area -->
+                <td class="right-panel">
+                    <div class="label" style="margin-bottom: 8px;">Scan to Verify</div>
+                    <div class="qr-placeholder">
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data={{ verify_url }}"
+                            width="100" height="100">
+                    </div>
+                    <div class="ticket-id">
+                        REF #{{ ticket.ticket_id|truncatechars:12 }}
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+</body>
+
+</html>
