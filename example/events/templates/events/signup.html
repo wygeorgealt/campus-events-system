@@ -1,0 +1,19 @@
+<style>
+    body { background: #36393f; color: white; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+    .signup-box { background: #2f3136; padding: 40px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); width: 320px; display: flex; flex-direction: column; }
+    input { background: #202225; border: none; padding: 12px; margin-bottom: 15px; border-radius: 4px; color: white; width: 100%; box-sizing: border-box; }
+    button { background: #5865f2; color: white; border: none; padding: 12px; border-radius: 4px; font-weight: bold; cursor: pointer; }
+</style>
+
+<div class="signup-box">
+    <h2 style="text-align: center;">Create Account</h2>
+    <form method="POST">
+        {% csrf_token %}
+        <input type="text" name="username" placeholder="Username" required>
+        <input type="text" name="f_name" placeholder="First Name" required>
+        <input type="text" name="l_name" placeholder="Last Name" required>
+        <input type="email" name="email" placeholder="Email" required>
+        <input type="password" name="password" placeholder="Password" required>
+        <button type="submit">Join Campus Events</button>
+    </form>
+</div>
