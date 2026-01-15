@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Campus Calendar</title>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+    <style>
+        body { background: #36393f; color: white; font-family: sans-serif; margin: 0; display: flex; height: 100vh; }
+        .sidebar { width: 240px; background: #2f3136; padding: 20px; border-right: 1px solid #202225; }
+        .calendar-container { flex-grow: 1; padding: 40px; overflow-y: auto; }
+        #calendar { background: #2f3136; padding: 20px; border-radius: 12px; color: white; }
+        /* Style the calendar to look like Discord */
+        .fc-toolbar-title { color: white !important; }
+        .fc-daygrid-day-number { color: #b9bbbe !important; text-decoration: none; }
+        .fc-col-header-cell-cushion { color: #5865f2 !important; text-decoration: none; }
+        .fc-event { cursor: pointer; background-color: #5865f2 !important; border: none !important; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2 style="font-size: 18px;">Events</h2>
+        <a href="{% url 'home' %}" style="color: #b9bbbe; text-decoration: none; display: block; margin-bottom: 10px;">🏠 Back to Feed</a>
+    </div>
+
+    <div class="calendar-container">
+        <div id="calendar"></div>
+    </div>
+
+    {{ events_json|json_script:"event-data" }}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+        
+        // 2. We extract the data using the ID we just created
+        var eventData = JSON.parse(document.getElementById('event-data').textContent);
+        
+        // 3. We use the 'eventData' variable instead of the curly braces
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            height: 'auto',
+            events: eventData, // Linter is happy now!
+            eventClick: function(info) {
+                if (info.event.url) {
+                    window.location.href = info.event.url;
+                    return false;
+                }
+            }
+        });
+        calendar.render();
+    });
+</script>

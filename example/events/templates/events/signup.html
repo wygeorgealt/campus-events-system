@@ -6,6 +6,11 @@
 </style>
 
 <div class="signup-box">
+    {% if messages %}
+    {% for message in messages %}
+        <p style="color: #ff4747; font-size: 0.85rem; text-align: center;">{{ message }}</p>
+    {% endfor %}
+{% endif %}
     <h2 style="text-align: center;">Create Account</h2>
     <form method="POST">
         {% csrf_token %}

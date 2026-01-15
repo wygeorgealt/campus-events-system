@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Checkout | {{ event.title }}</title>
+    <style>
+        body { background: #36393f; color: white; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .payment-card { background: #2f3136; padding: 30px; border-radius: 12px; width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .price-tag { font-size: 2rem; font-weight: bold; color: #3ba55c; text-align: center; margin: 20px 0; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 4px; border: 1px solid #202225; background: #40444b; color: white; box-sizing: border-box;}
+        .pay-btn { background: #5865f2; color: white; border: none; padding: 15px; width: 100%; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 20px;}
+    </style>
+</head>
+<body>
+    <div class="payment-card">
+        <h3>Confirm Ticket Purchase</h3>
+        <p style="color: #b9bbbe;">Event: {{ event.title }}</p>
+        <div class="price-tag">${{ event.price }}</div>
+        
+        <form action="{% url 'process_payment' %}" method="POST">
+            {% csrf_token %}
+            <input type="text" placeholder="Cardholder Name" required>
+            <input type="text" placeholder="1234 5678 9101 1121" required>
+            <div style="display: flex; gap: 10px;">
+                <input type="text" placeholder="MM/YY" required>
+                <input type="text" placeholder="CVC" required>
+            </div>
+            <button type="submit" class="pay-btn">Pay & Register</button>
+        </form>
+    </div>
+</body>
+</html>

@@ -1,0 +1,23 @@
+<div class="registration-container">
+    <h2>Confirm Registration for {{ event.title }}</h2>
+    <form method="POST">
+        {% csrf_token %}
+        <label>First Name</label>
+        <input type="text" value="{{ user.first_name }}" readonly>
+        
+        <label>Last Name</label>
+        <input type="text" value="{{ user.last_name }}" readonly>
+        
+        <label>Email Address</label>
+        <input type="email" value="{{ user.email }}" readonly>
+
+        <div class="ticket-summary">
+            <p>Event Type: <strong>{{ event.event_type }}</strong></p>
+            <p>Total: <strong>${{ event.price }}</strong></p>
+        </div>
+
+        <button type="submit" class="reg-btn">
+            {% if event.event_type == 'PAID' %}Proceed to Payment{% else %}Get Free Ticket{% endif %}
+        </button>
+    </form>
+</div>

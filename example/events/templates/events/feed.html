@@ -5,55 +5,66 @@
     <style>
         body { background: #36393f; color: white; font-family: 'Helvetica', sans-serif; display: flex; margin: 0; height: 100vh; overflow: hidden; }
         
-        /* Sidebar (Discord Style) */
-        .sidebar { width: 240px; background: #2f3136; padding: 20px; display: flex; flex-direction: column; border-right: 1px solid #202225; }
+        .sidebar { width: 240px; background: #2f3136; padding: 20px; display: flex; flex-direction: column; border-right: 1px solid #202225; flex-shrink: 0; }
         .sidebar h2 { font-size: 18px; margin-bottom: 20px; color: #fff; }
         .club-link { padding: 10px; border-radius: 4px; cursor: pointer; color: #b9bbbe; text-decoration: none; margin-bottom: 5px; display: block; }
         .club-link:hover { background: #393d42; color: white; }
         .active { background: #4f545c; color: white; }
 
-        /* Feed (Instagram Style) */
-        .feed-container { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; align-items: center; padding: 40px 20px; }
-        .post { background: #ffffff; color: #2c2f33; border-radius: 12px; width: 100%; max-width: 480px; margin-bottom: 40px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.4); }
+        .feed-container { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; align-items: center; padding: 40px 20px; height: 100vh; }
+        .post { background: #ffffff; color: #2c2f33; border-radius: 12px; width: 480px; margin-bottom: 40px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.4); flex-shrink: 0; }
         .post img { width: 100%; height: 400px; object-fit: cover; border-bottom: 1px solid #f0f0f0; }
         .post-content { padding: 20px; }
         .post-title { font-weight: bold; font-size: 1.3rem; margin: 0 0 10px 0; }
         .post-desc { color: #4f545c; margin-bottom: 20px; line-height: 1.5; }
         
-        /* Action Button */
         .reg-btn { background: #5865f2; color: white; border: none; padding: 14px; width: 100%; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 1rem; }
         .reg-btn:hover { background: #4752c4; }
         .reg-btn:disabled { background: #4f545c; cursor: not-allowed; }
         .stats { font-size: 0.85rem; color: #72767d; margin-top: 15px; text-align: center; }
 
-        /* Alerts */
-        .messages { width: 100%; max-width: 480px; margin-bottom: 20px; }
-        .alert { padding: 10px; border-radius: 4px; background: #3ba55c; color: white; text-align: center; }
+        /* FIXED CSS CLASSES */
+        .messages { width: 100%; max-width: 480px; margin-bottom: 20px; flex-shrink: 0; }
+        .alert { padding: 10px; border-radius: 4px; color: white; text-align: center; }
+        .alert-success { background: #3ba55c; }
+        .alert-error { background: #f04747; }
     </style>
 </head>
 <body>
     <div class="sidebar">
         <h2>Clubs & Orgs</h2>
         <a href="/" class="club-link active">🏠 Global Feed</a>
+        <a href="{% url 'calendar' %}" class="club-link">📅 Event Calendar</a>
         
         <hr style="border: 0.5px solid #4f545c; width: 100%; margin: 10px 0;">
+
         {% if not user.is_authenticated %}
             <a href="{% url 'login' %}" class="club-link" style="color: #b9bbbe;">🔑 Login</a>
             <a href="{% url 'signup' %}" class="club-link" style="color: #5865f2;">✨ Sign Up</a>
         {% else %}
-            <div class="club-link" style="color: #fff; cursor: default;">👤 {{ user.first_name }}</div>
-            <form action="{% url 'logout' %}" method="POST" style="display: inline;">
-    {% csrf_token %}
-    <button type="submit" class="club-link" style="background: none; border: none; width: 100%; text-align: left; font-size: inherit; cursor: pointer;">
-        🚪 Logout
-    </button>
-</form>
-        {% endif %}
+            <div class="club-link" style="color: #fff; cursor: default;">
+                <small style="color: #b9bbbe; display: block;">
+                    {% if user.is_staff %}🛡️ Admin{% else %}🎓 Student{% endif %}
+                </small>
+                👤 {{ user.username }}
+            </div>
 
-        <hr style="border: 0.5px solid #4f545c; width: 100%; margin: 10px 0;">
-        
-        {% if user.is_staff %}
-            <a href="/admin" class="club-link" style="color: #3ba55c;">➕ Post Event</a>
+            {% if user.is_staff %}
+                <div style="padding: 10px 10px 5px; font-size: 0.75rem; color: #72767d; text-transform: uppercase; letter-spacing: 1px;">Management</div>
+                <a href="/admin/events/event/add/" class="club-link" style="color: #3ba55c;">➕ Post Event</a>
+                <a href="/admin/events/event/" class="club-link">⚙️ Admin Dashboard</a>
+            {% else %}
+                <a href="#" class="club-link">📝 My Registrations</a>
+            {% endif %}
+
+            <hr style="border: 0.5px solid #4f545c; width: 100%; margin: 10px 0;">
+            
+            <form action="{% url 'logout' %}" method="POST" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" class="club-link" style="background: none; border: none; width: 100%; text-align: left; font-size: inherit; cursor: pointer;">
+                    🚪 Logout
+                </button>
+            </form>
         {% endif %}
     </div>
 
@@ -61,7 +72,9 @@
         {% if messages %}
             <div class="messages">
                 {% for message in messages %}
-                    <div class="alert">{{ message }}</div>
+                    <div class="alert {% if message.tags == 'error' %}alert-error{% else %}alert-success{% endif %}">
+                        {{ message }}
+                    </div>
                 {% endfor %}
             </div>
         {% endif %}
@@ -76,23 +89,19 @@
             <div class="post-content">
                 <p class="post-title">{{ event.title }}</p>
                 <p class="post-desc">{{ event.description }}</p>
+                <a href="{% url 'event_detail' event.id %}" class="reg-btn" 
+                    style="text-decoration: none; display: block; text-align: center; box-sizing: border-box; width: 100%;">
+                     {% if event.signed_up_count >= event.capacity %}
+                         View Details (Full)
+                     {% else %}
+                         View & Sign Up
+                     {% endif %}
+                </a>
                 
-                <form action="{% url 'register_event' event.id %}" method="POST">
-                    {% csrf_token %}
-                    <button type="submit" class="reg-btn" 
-                        {% if event.signed_up_count >= event.capacity %}disabled{% endif %}>
-                        {% if event.signed_up_count >= event.capacity %}Event Full{% else %}Sign Up for Event{% endif %}
-                    </button>
-                </form>
-
                 <div class="stats">
                     Capacity: <strong>{{ event.signed_up_count }} / {{ event.capacity }}</strong> students
                 </div>
             </div>
-        </div>
-        {% empty %}
-        <div style="text-align: center; margin-top: 50px;">
-            <p style="font-size: 1.2rem; color: #b9bbbe;">No events posted yet.</p>
         </div>
         {% endfor %}
     </div>
