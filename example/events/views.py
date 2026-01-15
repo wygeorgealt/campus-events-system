@@ -52,7 +52,7 @@ def register_event(request, event_id):
     })
     
     if response:
-        filename = f"Ticket_{event.title.replace(' ', '_')}_{ticket.ticket_id[:8]}.pdf"
+        filename = f"Ticket_{event.title.replace(' ', '_')}_{str(ticket.ticket_id)[:8]}.pdf"
         response['Content-Disposition'] = f'attachment; filename="{filename}"'
         return response
             
