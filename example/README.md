@@ -155,5 +155,3 @@ Then, open your browser and go to: `http://127.0.0.1:8000/`
 * **`TemplateDoesNotExist`**: You probably put the HTML file in the wrong folder. It must be inside `events/templates/events/`.
 * **`NoReverseMatch`**: You used a link like `{% url 'calendar' %}` but forgot to add the path in `urls.py`.
 * **Images not showing**: Make sure you have `MEDIA_URL` and `MEDIA_ROOT` configured in `settings.py`.
-
-**Would you like me to create a "Cheat Sheet" of common Django HTML tags (like `{% if %}` and `{% for %}`) so you can easily display database data?**
