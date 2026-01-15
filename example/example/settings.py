@@ -20,12 +20,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-rdd4%n#zmxt!ai&@u!*_g#1!-t8!#eg-s2j7b6mf!_qqu!s0a="
+
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = os.environ.get("SECRET_KEY", "django-insecure-rdd4%n#zmxt!ai&@u!*_g#1!-t8!#eg-s2j7b6mf!_qqu!s0a=")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = os.environ.get("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(",") if os.environ.get("ALLOWED_HOSTS") else []
 
 
 # Application definition
@@ -44,6 +47,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -78,8 +82,8 @@ WSGI_APPLICATION = "example.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django_mongodb_backend",
-        "HOST": "mongodb+srv://kaxxynaero:Darakushita12@cluster0.55rhxrp.mongodb.net/?appName=Cluster0",
-        "NAME": "campus_db",
+        "HOST": os.environ.get("MONGODB_URI", "mongodb+srv://kaxxynaero:Darakushita12@cluster0.55rhxrp.mongodb.net/?appName=Cluster0"),
+        "NAME": os.environ.get("MONGODB_NAME", "campus_db"),
     },
 }
 
@@ -125,6 +129,8 @@ STATIC_URL = "static/"
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
+STATIC_ROOT = BASE_DIR / "staticfiles"
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/6.0/ref/settings/#default-auto-field
