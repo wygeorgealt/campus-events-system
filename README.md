@@ -1,8 +1,8 @@
-# CampusHub - University Event Management System
+# Festejo - University Event Management System
 
-**CampusHub** is a modern, social event platform designed for university campuses. It allows students to discover events, purchase tickets, and connect with their campus community.
+**Festejo** is a modern, social event platform designed for university campuses. It allows students to discover events, purchase tickets, and connect with their campus community.
 
-![CampusHub Banner](example/events/static/events/images/promo3.png)
+![Festejo Banner](example/events/static/events/images/wordlogo.png)
 
 ## 🚀 Features
 
