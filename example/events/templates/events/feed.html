@@ -1,6 +1,6 @@
 {% extends 'events/base.html' %}
 
-{% block title %}Feed | CampusHub{% endblock %}
+{% block title %}Feed | Festejo{% endblock %}
 
 {% block content %}
 <div class="max-w-xl mx-auto space-y-12 pt-4">
@@ -58,8 +58,9 @@
             <div class="py-6 space-y-4">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-4">
+                        {% url 'event_detail' event.id as event_path %}
                         <button
-                            onclick="openShareModal('{{ request.scheme }}://{{ request.get_host }}{% url 'event_detail' event.id %}')"
+                            onclick="openShareModal('{{ request.scheme }}://{{ request.get_host }}{{ event_path }}')"
                             class="hover:scale-110 transition-transform text-gray-900 flex items-center justify-center">
                             <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
@@ -97,7 +98,7 @@
                     <div class="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden shadow-inner">
                         {% widthratio event.signed_up_count event.capacity 100 as percentage %}
                         <div class="h-full bg-primary rounded-full transition-all duration-1000 ease-out"
-                            style="width: {{ percentage }}%"></div>
+                            style="--progress-width: {{ percentage }}%; width: var(--progress-width);"></div>
                     </div>
                 </div>
 
