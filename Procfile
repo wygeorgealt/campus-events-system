@@ -1,1 +1,1 @@
-web: gunicorn example.wsgi --log-file -
+web: cd example && gunicorn example.wsgi --log-file -
